@@ -2,6 +2,8 @@ const Express = require('express');
 const Mongoose = require('mongoose');
 const BodyParser = require('body-parser');
 const Model = require('./models/models.js');
+const Crypto = require('crypto');
+const Jwt = require('jsonwebtoken');
 
 const config = require('./config/config.js');
 const app = Express();
@@ -9,8 +11,10 @@ const app = Express();
 app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({ extended: true }));
 
+Mongoose.set('debug', true); // Просим Mongoose выводить все обращения к БД в консоль (крутая фишка для отладки кода)
 Mongoose.connect(config.URL, { useNewUrlParser: true });
 const modelUser = Model.user;
+
 app.post('/signin', async(req, res)=>{
   try{
     if(!req.body.login || !req.body.password){
@@ -46,6 +50,14 @@ app.post('/register', async(req, res) =>{
   }catch(error){
     return res.status(500).send(error);
   };
+})
+
+app.post('/coded', async(req, res)=>{
+  var word = "Привет";
+  var token = Jwt.sign(word, config.SECRET);
+  res.send(token);
+  var decoded = Jwt.verify(token, config.SECRET);
+  console.log(decoded);
 })
 
 app.listen(config.PORT, ()=>{
