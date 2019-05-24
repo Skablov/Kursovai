@@ -1,13 +1,15 @@
 const Express = require('express');
 const Mongoose = require('mongoose');
 const BodyParser = require('body-parser');
-const Model = require('./models/models.js');
+const CookieParser = require('cookie-parser');
 const Crypto = require('crypto');
 const Jwt = require('jsonwebtoken');
 
 const config = require('./config/config.js');
+const Model = require('./models/models.js');
 const app = Express();
 
+app.use(cookieParser());
 app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({ extended: true }));
 
