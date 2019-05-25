@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>server.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>server.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Подключаем необходимые модули для работы сервера</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> Express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-keyword">const</span> Mongoose = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mongoose'</span>);
+<span class="hljs-keyword">const</span> BodyParser = <span class="hljs-built_in">require</span>(<span class="hljs-string">'body-parser'</span>);
+<span class="hljs-keyword">const</span> CookieParser = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cookie-parser'</span>);
+<span class="hljs-keyword">const</span> Jwt = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jsonwebtoken'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Подключаем модули <code>config.js</code> и <code>models.js</code>
+Config.js содержит переменную <code>PORT</code> <code>URL</code> <code>SECRET</code>
+<code>PORT</code> - порт нашего сервера
+<code>URl</code> - адресс удаленной nosql базы данных с паролем для получения доступа к БД
+<code>SECRET</code> - секретное слово, используемое для создания jwt
+model.js - две mongoose модели коллекций - users и tasks </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> config = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./config/config.js'</span>);
+<span class="hljs-keyword">const</span> Model = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./models/models.js'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Включаем фраемворк express в наш проект</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> app = Express();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Говорим что будет использоваться ejs файлы</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.set(<span class="hljs-string">'view engine'</span>, <span class="hljs-string">'ejs'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Говорим, что будем использовать куки парсер для удобной работы с куки</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.use(CookieParser());</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Говорим, что будем использовать body-parser для работы с json и urlencoded </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.use(BodyParser.json());
+app.use(BodyParser.urlencoded({ <span class="hljs-attr">extended</span>: <span class="hljs-literal">true</span> }));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Включаем вывод обращений mongoose к бд, для удобного дебагинга</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>Mongoose.set(<span class="hljs-string">'debug'</span>, <span class="hljs-literal">true</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Подключаемся к БД
+@params{string} config.URL - url адрес БД</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>Mongoose.connect(config.URL, { <span class="hljs-attr">useNewUrlParser</span>: <span class="hljs-literal">true</span> });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>записываем в переменные модели user и task </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> modelUser = Model.user;
+<span class="hljs-keyword">const</span> modelTask = Model.task;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Обработчик get запросов на /index</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.get(<span class="hljs-string">'/'</span>, <span class="hljs-keyword">async</span>(req, res)=&gt;{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>рисуем index.ejs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  res.render(<span class="hljs-string">'index'</span>);
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Обработчик get запросов для /signin</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.get(<span class="hljs-string">'/signin'</span>, <span class="hljs-keyword">async</span>(req, res)=&gt;{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Проверяем на наличие access_token у пользователя
+Если <code>true</code> рисуем signin.ejs
+Если <code>false</code> перенаправляем на страницу /main</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">if</span>(isEmpty(req.cookies.access_token))
+    <span class="hljs-keyword">return</span> res.render(<span class="hljs-string">'signin'</span>);
+    <span class="hljs-keyword">else</span> {
+      <span class="hljs-keyword">return</span> res.redirect(<span class="hljs-string">'/main'</span>);
+    }
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Обработчик гет запросов для /register</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.get(<span class="hljs-string">'/register'</span>, <span class="hljs-keyword">async</span>(req, res) =&gt;{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>рисуем register.ejs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  res.render(<span class="hljs-string">'register'</span>);
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Обработчик get запросов для /main</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.get(<span class="hljs-string">'/main'</span>, <span class="hljs-keyword">async</span>(req, res) =&gt;{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Проверяем на отсутствие access_token 
+<code>true</code> отправляем пользователя на /index
+‘false’ рисуем main.ejs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">if</span>(!req.cookies.access_token){
+    <span class="hljs-keyword">return</span> res.redirect(<span class="hljs-string">'/'</span>);
+  }<span class="hljs-keyword">else</span>{
+    res.render(<span class="hljs-string">'main'</span>);
+  }
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Обработчик get запросов для /exit</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.get(<span class="hljs-string">'/exit'</span>, <span class="hljs-keyword">async</span>(req, res)=&gt;{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Чистим куки и отправляем на страницу /index</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  res.clearCookie(<span class="hljs-string">'access_token'</span>);
+  res.redirect(<span class="hljs-string">'/'</span>);
+})</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>Обработчик post запросов для /main</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.post(<span class="hljs-string">'/main'</span>, <span class="hljs-keyword">async</span>(req, res) =&gt;{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Если получили данные - начинаем с ними работать
+В противном случае отправляем код ошибки 500</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">try</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p><code>req.body.command</code> - содержит команду, необходимую для выполнения запроса</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">switch</span> (req.body.command) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p><code>givetask</code> - запрос на вывод всех задач из БД</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">case</span> <span class="hljs-string">'givetask'</span>:</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p><code>decoded</code> - декодирования jwt -&gt; получаем уникальный id пользователя
+Благодаря которому находит task, которые ему принадлежат
+<code>Jwt.verify</code> -&gt; на вход сам токен и кодовое слово для декодирования</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">let</span> decoded = Jwt.verify(req.body.token, config.SECRET);
+          <span class="hljs-keyword">if</span>(!isEmpty(decoded)){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>Проверяем на отсутствие данных в декоде
+<code>true</code> - данные есть
+<code>false</code> - данные отсутсвуют -&gt; Отправлем ошибку</p>
+<p>Находим принадлежащие юзеру таски из общей коллекции
+По полю <code>id</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">let</span> task = <span class="hljs-keyword">await</span> modelTask.find( {<span class="hljs-attr">id</span>: decoded} ).exec();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>Возвращаем таски</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">return</span> res.send(task);
+          }<span class="hljs-keyword">else</span>{
+            <span class="hljs-keyword">return</span> res.json({<span class="hljs-attr">result</span>: <span class="hljs-string">'Ошибка в построении запроса!'</span>});
+          }
+        <span class="hljs-keyword">break</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p><code>addTask</code> добавление нового Таска</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">case</span> <span class="hljs-string">'addTask'</span>:
+          <span class="hljs-keyword">let</span> id = Jwt.verify(req.body.token, config.SECRET);
+          <span class="hljs-keyword">if</span>(!isEmpty(id) &amp;&amp; !isEmpty(req.body.task)){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>Создаем новый образец модели Таска -&gt; передаем id пользователя, тело задачи</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">let</span> task = <span class="hljs-keyword">new</span> modelTask({<span class="hljs-attr">id</span>: id, <span class="hljs-attr">task</span>: req.body.task});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>Сохраняем таск в коллекции и возвращаем сохранненый результат клиенту
+В случае неудачи - отправляем ошибку</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">let</span> result = <span class="hljs-keyword">await</span> task.save(<span class="hljs-function">(<span class="hljs-params">err, result</span>) =&gt;</span> { <span class="hljs-keyword">return</span> res.send({<span class="hljs-attr">_id</span>: result._id, <span class="hljs-attr">task</span>: result.task}); });
+          }<span class="hljs-keyword">else</span>{
+            <span class="hljs-keyword">return</span> res.json({<span class="hljs-attr">error</span>: <span class="hljs-string">'Ошибка в построении запроса!'</span>});
+          };
+        <span class="hljs-keyword">break</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p><code>deltask</code>Удалить конкретный таск</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">case</span> <span class="hljs-string">'deltask'</span>:
+          <span class="hljs-keyword">if</span>(!isEmpty(req.body.id)){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>Делаем запрос на удаление таска -&gt; отправляем уникальный id ТАСКА
+Возвращаем code: 1 при успешной операции или error ‘’ в противном случае</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">let</span> del = <span class="hljs-keyword">await</span> modelTask.deleteOne({<span class="hljs-attr">_id</span>: req.body.id}).exec();
+            <span class="hljs-keyword">return</span> res.json({<span class="hljs-attr">result</span>: <span class="hljs-string">'Успешно!'</span>, <span class="hljs-attr">code</span>: <span class="hljs-string">'1'</span>});
+          }<span class="hljs-keyword">else</span>{
+            <span class="hljs-keyword">return</span> res.json({<span class="hljs-attr">error</span>: <span class="hljs-string">'Ошибка в построении запроса!'</span>});
+          }
+        <span class="hljs-keyword">break</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>Если команда для сервера не была понятной - отпрляет ошибку</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">default</span>:
+        <span class="hljs-keyword">return</span> res.json({<span class="hljs-attr">result</span>: <span class="hljs-string">'Ошибка в построении запроса!'</span>});
+
+    }
+  }<span class="hljs-keyword">catch</span>(error){
+    <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">500</span>).send(error);
+  }
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>Обработчик post запросов для /register</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.post(<span class="hljs-string">'/register'</span>, <span class="hljs-keyword">async</span>(req, res) =&gt;{
+  <span class="hljs-keyword">try</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>Проверяем на пустоту логин и пароль пользователя
+<code>true</code> -&gt; вернем пользователю ошибку, ведь он не ввел какое-то поле
+<code>false</code> -&gt; продолжим с ним работать</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">if</span>(isEmpty(req.body.login) || isEmpty(!req.body.password)){
+      <span class="hljs-keyword">return</span> res.json({<span class="hljs-attr">error</span>: <span class="hljs-string">"Не введен пароль или логин"</span>});
+    }
+    <span class="hljs-keyword">else</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>В переменную <code>check</code> записываем результат запроса нахождение похожего логина
+Если <code>check</code> ничего не вернул -&gt; не нашел, регистрируем пользователя
+Если что-то вернул -&gt; такой логин уже занят, реторним ошибку</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">var</span> check = <span class="hljs-keyword">await</span> modelUser.findOne({<span class="hljs-attr">login</span>: req.body.login}).exec();
+      <span class="hljs-keyword">if</span>(isEmpty(check)){
+        <span class="hljs-keyword">var</span> user = <span class="hljs-keyword">new</span> modelUser(req.body);
+        <span class="hljs-keyword">var</span> result = <span class="hljs-keyword">await</span> user.save();
+        <span class="hljs-keyword">return</span> res.send(<span class="hljs-string">`Вы успешно зарегистрировались как <span class="hljs-subst">${result.login}</span>, теперь вы можете авторизоваться!&lt;br&gt;&lt;a href='/signin'&gt;Авторизация&lt;/a&gt;`</span>);
+      }<span class="hljs-keyword">else</span>{
+        <span class="hljs-keyword">return</span> res.json({ <span class="hljs-attr">error</span>: <span class="hljs-string">"Данный логин уже используется в системе :("</span> });
+      }
+    };
+  }<span class="hljs-keyword">catch</span>(error){
+    <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">500</span>).send(error);
+  };
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>обработчик для теста, в release 1.0 не используется</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.post(<span class="hljs-string">'/coded'</span>, <span class="hljs-keyword">async</span>(req, res)=&gt;{
+
+  <span class="hljs-keyword">var</span> decoded = Jwt.verify(req.body.token, config.SECRET);
+  <span class="hljs-built_in">console</span>.log(decoded);
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>Обработчик пост запросов на <code>/signin</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.post(<span class="hljs-string">'/signin'</span>, <span class="hljs-keyword">async</span>(req, res)=&gt;{
+  <span class="hljs-keyword">try</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>Проверка на пустоту реквеста
+<code>true</code> -&gt; вернем ошибку
+<code>false</code> -&gt; работаем дальше</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">if</span>(!req.body.login || !req.body.password){
+      <span class="hljs-keyword">return</span> res.json({ <span class="hljs-attr">result</span>: <span class="hljs-string">"Ошибка, не все поля заполнены!"</span> });
+    }
+    <span class="hljs-keyword">else</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>В переменную <code>check</code> запишем обращение к БД “найди мне похожий логин и верни данные с ним”
+Если <code>check</code> не пустой, проверяем пароль, что пришел от клиента и тот, что хранится на сервере
+Если все правильно - генерируем пользователю токен на 10 минут и сообщаем о результатах
+В противном случае реторним ошибку</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">var</span> check = <span class="hljs-keyword">await</span> modelUser.findOne({<span class="hljs-attr">login</span>: req.body.login}).exec();
+        <span class="hljs-keyword">if</span>(!isEmpty(check) &amp;&amp; check.password == req.body.password){
+          res.cookie(<span class="hljs-string">'access_token'</span>, <span class="hljs-string">`<span class="hljs-subst">${Jwt.sign(check.id, config.SECRET)}</span>`</span>, { <span class="hljs-attr">expires</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(<span class="hljs-built_in">Date</span>.now() + <span class="hljs-number">900000</span>)});
+          res.json({<span class="hljs-attr">result</span>: <span class="hljs-string">"Успешно авторизовались!"</span>});
+        }<span class="hljs-keyword">else</span>{
+          <span class="hljs-keyword">return</span> res.json({<span class="hljs-attr">result</span>: <span class="hljs-string">"Неправильный логин или пароль!"</span>});
+        }
+    };
+  }<span class="hljs-keyword">catch</span>(error){
+    res.status(<span class="hljs-number">500</span>).send(error);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Ошибка в signin <span class="hljs-subst">${error}</span>`</span>);
+    <span class="hljs-keyword">return</span> error;
+  }
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>Начинаем слушать запросы по порту - config.PORT</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app.listen(config.PORT, ()=&gt;{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Server listening at: <span class="hljs-subst">${config.PORT}</span>...`</span>);
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>Функция проверки на пустоту
+Принимает объект
+возвращает false если объект не пустой
+true в противном варианте</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isEmpty</span>(<span class="hljs-params">obj</span>) </span>{
+    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</span> obj)
+    {
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

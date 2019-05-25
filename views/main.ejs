@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+  <head>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <meta charset="utf-8">
+    <title>Главная страница пользователя</title>
+
+  </head>
+  <body>
+    <header>
+      <h1>Главная страница пользователя</h1>
+      <a href="/exit">Выйти</a>
+    </header>
+    <section>
+      <div>
+        <input type="text" id="task">
+        <button type="button" onclick="addTask()">Добавить</button>
+      </div>
+      <div>
+        <ul id="list">
+
+        </ul>
+      </div>
+    </section>
+    <footer>версия проекта - 1.0</footer>
+    <script type="text/javascript">
+      giveTask();
+      function addTask(){
+        $.ajax({
+          url: '/main',
+          type: 'POST',
+          dataType: 'json',
+          data:{
+            command: 'addTask',
+            token: getCookie('access_token'),
+            task: $('#task').val()
+          },
+          success: data =>{
+            console.log(data.task);
+            let li = document.createElement('li');
+            li.className = 'task';
+            li.id = Number($('.task').last().attr("id")) + 2;
+            li.innerHTML = data.task;
+            li.onclick = () =>{
+              let answer = confirm(`Вы точно желаете удалить этот таск - ${data.task}?`);
+              if(answer){
+                $.ajax({
+                  url: '/main',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: {
+                    command: 'deltask',
+                    id: data._id
+                  },
+                  success: (data)=>{
+                      $(`#${li.id}`).remove();
+                  }
+                });
+              }else{
+                return;
+              }
+            };
+            document.getElementById('list').appendChild(li);
+          }
+        });
+      }
+
+      function giveTask(){
+        $.ajax({
+          url: '/main',
+          type: 'POST',
+          dataType: 'json',
+          data:{
+            token: getCookie('access_token'),
+            command: 'givetask'
+          },
+          success: (data)=>{
+            for(let i = 0; i < data.length; i++){
+              let list = document.getElementById("list");
+              let li = document.createElement('li');
+              li.innerHTML = `${data[i].task}`;
+              li.id = i;
+              li.className = 'task';
+              li.onclick = () =>{
+                let answer = confirm(`Вы точно желаете удалить этот таск - ${data[i].task}?`);
+                if(answer){
+                  $.ajax({
+                    url: '/main',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                      command: 'deltask',
+                      id: data[i]._id
+                    },
+                    success: (data)=>{
+                        $(`#${i}`).remove();
+                    }
+                  });
+                }else{
+                  return;
+                }
+              };
+              list.appendChild(li);
+            }
+          }
+        })
+      }
+
+      function getCookie(name) // функция для удобной работы с куки файлами
+      {
+       var matches = document.cookie.match(new RegExp(
+         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+       ));
+       return matches ? decodeURIComponent(matches[1]) : undefined;
+      }
+    </script>
+  </body>
+</html>
