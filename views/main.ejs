@@ -8,7 +8,8 @@
   </head>
   <body>
     <header>
-      <h1 id="head"></h1>
+      <h1>Главная страница пользователя</h1>
+      <a href="/exit">Выйти</a>
     </header>
     <section>
       <div>
@@ -35,12 +36,33 @@
             task: $('#task').val()
           },
           success: data =>{
-            console.log(data.result);
+            console.log(data.task);
+            let li = document.createElement('li');
+            li.className = 'task';
+            li.id = Number($('.task').last().attr("id")) + 2;
+            li.innerHTML = data.task;
+            li.onclick = () =>{
+              let answer = confirm(`Вы точно желаете удалить этот таск - ${data.task}?`);
+              if(answer){
+                $.ajax({
+                  url: '/main',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: {
+                    command: 'deltask',
+                    id: data._id
+                  },
+                  success: (data)=>{
+                      $(`#${li.id}`).remove();
+                  }
+                });
+              }else{
+                return;
+              }
+            };
+            document.getElementById('list').appendChild(li);
           }
         });
-      }
-      function delTask(id){
-        console.log(id);
       }
 
       function giveTask(){
@@ -57,8 +79,9 @@
               let list = document.getElementById("list");
               let li = document.createElement('li');
               li.innerHTML = `${data[i].task}`;
-              li.onclick = (event) =>{
-                console.log(event)
+              li.id = i;
+              li.className = 'task';
+              li.onclick = () =>{
                 let answer = confirm(`Вы точно желаете удалить этот таск - ${data[i].task}?`);
                 if(answer){
                   $.ajax({
@@ -70,7 +93,7 @@
                       id: data[i]._id
                     },
                     success: (data)=>{
-                        list.removeChild(list.this)
+                        $(`#${i}`).remove();
                     }
                   });
                 }else{

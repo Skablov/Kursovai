@@ -24,7 +24,11 @@ app.get('/', async(req, res)=>{
   res.render('index');
 });
 app.get('/signin', async(req, res)=>{
-    res.render('signin');
+  if(isEmpty(req.cookies.access_token))
+    return res.render('signin');
+    else {
+      return res.redirect('/main');
+    }
 });
 app.get('/register', async(req, res) =>{
   res.render('register');
@@ -36,6 +40,10 @@ app.get('/main', async(req, res) =>{
     res.render('main');
   }
 });
+app.get('/exit', async(req, res)=>{
+  res.clearCookie('access_token');
+  res.redirect('/');
+})
 
 app.post('/main', async(req, res) =>{
   try{
@@ -53,8 +61,8 @@ app.post('/main', async(req, res) =>{
           let id = Jwt.verify(req.body.token, config.SECRET);
           if(!isEmpty(id) && !isEmpty(req.body.task)){
             let task = new modelTask({id: id, task: req.body.task});
-            let result = await task.save();
-            return res.json({result: 'Успешно!', code: '1'});
+            var data = new Object;
+            let result = await task.save((err, result) => { return res.send({_id: result._id, task: result.task}); });
           }else{
             return res.json({error: 'Ошибка в построении запроса!'});
           };
