@@ -57,7 +57,8 @@
               let list = document.getElementById("list");
               let li = document.createElement('li');
               li.innerHTML = `${data[i].task}`;
-              li.onclick = () =>{
+              li.onclick = (event) =>{
+                console.log(event)
                 let answer = confirm(`Вы точно желаете удалить этот таск - ${data[i].task}?`);
                 if(answer){
                   $.ajax({
@@ -69,7 +70,7 @@
                       id: data[i]._id
                     },
                     success: (data)=>{
-                      console.log(data);
+                        list.removeChild(list.this)
                     }
                   });
                 }else{

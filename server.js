@@ -60,7 +60,12 @@ app.post('/main', async(req, res) =>{
           };
         break;
       case 'deltask':
-          console.log(req.body);
+          if(!isEmpty(req.body.id)){
+            let del = await modelTask.deleteOne({_id: req.body.id}).exec();
+            return res.json({result: 'Успешно!', code: '1'});
+          }else{
+            return res.json({error: 'Ошибка в построении запроса!'});
+          }
         break;
       default:
         return res.json({result: 'Ошибка в построении запроса!'});
