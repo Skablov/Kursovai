@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+  <head>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <meta charset="utf-8">
+    <title>Главная страница пользователя</title>
+
+  </head>
+  <body>
+    <header>
+      <h1 id="head"></h1>
+    </header>
+    <section>
+      <div>
+        <input type="text" id="task">
+        <button type="button" onclick="addTask()">Добавить</button>
+      </div>
+      <div>
+        <ul id="list">
+
+        </ul>
+      </div>
+    </section>
+    <footer>версия проекта - 1.0</footer>
+    <script type="text/javascript">
+      giveTask();
+      function addTask(){
+        $.ajax({
+          url: '/main',
+          type: 'POST',
+          dataType: 'json',
+          data:{
+            command: 'addTask',
+            token: getCookie('access_token'),
+            task: $('#task').val()
+          },
+          success: data =>{
+            console.log(data.result);
+          }
+        });
+      }
+      function delTask(id){
+        console.log(id);
+      }
+
+      function giveTask(){
+        $.ajax({
+          url: '/main',
+          type: 'POST',
+          dataType: 'json',
+          data:{
+            token: getCookie('access_token'),
+            command: 'givetask'
+          },
+          success: (data)=>{
+            for(let i = 0; i < data.length; i++){
+              let list = document.getElementById("list");
+              let li = document.createElement('li');
+              li.innerHTML = `${data[i].task}`;
+              li.onclick = () =>{
+                let answer = confirm(`Вы точно желаете удалить этот таск - ${data[i].task}?`);
+                if(answer){
+                  $.ajax({
+                    url: '/main',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                      command: 'deltask',
+                      id: data[i]._id
+                    },
+                    success: (data)=>{
+                      console.log(data);
+                    }
+                  });
+                }else{
+                  return;
+                }
+              };
+              list.appendChild(li);
+            }
+          }
+        })
+      }
+
+      function getCookie(name) // функция для удобной работы с куки файлами
+      {
+       var matches = document.cookie.match(new RegExp(
+         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+       ));
+       return matches ? decodeURIComponent(matches[1]) : undefined;
+      }
+    </script>
+  </body>
+</html>
