@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Авторизация</title>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Добро пожаловать!</h1>
+    </header>
+    <section>
+      <h2>Что вы хотите сделать?</h2>
+      <button id="signin">Авторизоваться</button>
+      <a href="/register">Зарегистрироваться</a>
+    </section>
+    <footer>
+      версия проекта - 1.0
+    </footer>
+    <script type="text/javascript">
+      $('#signin').on('click', (e)=>{
+        $(location).attr('href','/signin');
+      });
+    </script>
+  </body>
+</html>

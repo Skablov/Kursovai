@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Авторизация</title>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Авторизация!</h1>
+    </header>
+    <section>
+      <form>
+        <label for="login">Введите ваш логин</label>
+        <input type="text" id="login"><br><br>
+        <label for="password">Введите ваш пароль</label>
+        <input type="password" id="password"><br><br>
+        <label id="button">Авторизоваться</label>
+      </form>
+    </section>
+    <footer>
+      версия проекта - 1.0
+    </footer>
+    <script type="text/javascript">
+      $('#button').on('click', (e) =>{
+        var login = $('#login').val();
+        var password = $('#password').val();
+        login = login.replace(/\s/g,'');
+        password = password.replace(/\s/g, '');
+        var data = {
+          login: login,
+          password: password
+        };
+        if(login && password){
+          $.ajax({
+            type: 'POST',
+            url: '/signin',
+            contenType: 'application/json',
+            dataType: 'json',
+            data: data,
+            success:(data) =>{
+                  window.location.href = '/main';
+                }
+          });
+        }
+      })
+    </script>
+  </body>
+</html>
